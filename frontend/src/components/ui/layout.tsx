@@ -7,7 +7,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div
-      className="h-screen w-screen grid bg-[#0a0a0c] text-white"
+      className="h-screen w-screen grid bg-background text-foreground"
       style={{
         gridTemplateColumns: collapsed ? "5rem 1fr" : "15rem 1fr",
         gridTemplateRows: "3.8rem 1fr",
@@ -20,11 +20,11 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
         />
       </div>
 
-      <div className="col-start-2 bg-[#111113] border-b border-zinc-800">
+      <div className="col-start-2 bg-card border-b border-border">
         <Navbar />
       </div>
 
-      <main className="col-start-2 overflow-y-auto bg-[#0a0a0c] p-6">
+      <main className="col-start-2 overflow-y-auto bg-background p-6">
         {children}
       </main>
     </div>

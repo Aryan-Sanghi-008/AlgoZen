@@ -14,20 +14,22 @@ export const Sidebar = ({
 
   return (
     <aside
-      className={`h-full border-r border-zinc-800 bg-[#0c0c0e] backdrop-blur-xl flex flex-col shadow-xl transition-all duration-300 ${
+      className={`h-full border-r border-sidebar-border bg-sidebar backdrop-blur-xl flex flex-col shadow-xl transition-all duration-300 ${
         collapsed ? "w-20" : "w-60"
       }`}
     >
       <div
-        className={`flex ${collapsed ? "justify-center" : "justify-end"} p-3 relative`}
+        className={`flex ${
+          collapsed ? "justify-center" : "justify-end"
+        } p-3 relative`}
       >
-        <div className="absolute inset-x-0 bottom-0 h-0.5 bg-linear-to-r from-violet-500/60 via-cyan-400/60 to-purple-500/60 animate-gradient" />
+
         <button
           onClick={toggle}
-          className="p-2 rounded-lg hover:bg-zinc-800/60 transition"
+          className="p-2 rounded-lg hover:bg-sidebar-accent/40 transition"
         >
           <ChevronLeft
-            className={`h-5 w-5 text-zinc-300 transition-transform ${
+            className={`h-5 w-5 text-sidebar-foreground transition-transform ${
               collapsed ? "rotate-180" : ""
             }`}
           />
@@ -43,17 +45,17 @@ export const Sidebar = ({
             <Link
               key={route.name}
               to={route.path}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all group ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all group border border-transparent ${
                 active
-                  ? "bg-linear-to-r from-violet-600/30 to-cyan-600/30 border border-violet-500/40 shadow-md"
-                  : "hover:bg-zinc-800/60"
+                  ? "bg-sidebar-primary/30 border-sidebar-primary shadow-lg"
+                  : "hover:bg-sidebar-accent/30"
               }`}
             >
               <Icon
                 className={`h-5 w-5 min-w-5 transition ${
                   active
-                    ? "text-violet-300"
-                    : "text-zinc-400 group-hover:text-zinc-200"
+                    ? "text-sidebar-primary"
+                    : "text-sidebar-foreground group-hover:text-foreground"
                 }`}
               />
 
@@ -61,8 +63,8 @@ export const Sidebar = ({
                 <span
                   className={`text-sm font-medium transition ${
                     active
-                      ? "text-violet-200"
-                      : "text-zinc-400 group-hover:text-zinc-200"
+                      ? "text-sidebar-foreground"
+                      : "text-sidebar-foreground group-hover:text-foreground"
                   }`}
                 >
                   {route.name}
@@ -75,10 +77,8 @@ export const Sidebar = ({
 
       <div className="flex-1" />
 
-      <div className="flex-1" />
-
       {!collapsed && (
-        <div className="px-3 py-4 text-xs text-zinc-600">
+        <div className="px-3 py-4 text-xs text-muted-foreground">
           © AlgoZen v1.0 • Made for coders
         </div>
       )}

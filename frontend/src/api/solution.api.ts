@@ -34,7 +34,6 @@ export const postNewSolution = async (
       docToPost
     );
 
-    console.log("Solution posted successfully with ID: ", docRef.id);
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error("Error posting solution: ", error);
