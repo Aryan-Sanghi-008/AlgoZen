@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const LEETCODE_API_BASE_URL = "https://lccn.lbao.site/api/v1";
+const LEETCODE_API_BASE_URL = "/api/leetcode-proxy";
 const api = axios.create({ baseURL: LEETCODE_API_BASE_URL });
 
 /* ------------------------ 1. Latest Contests ------------------------ */

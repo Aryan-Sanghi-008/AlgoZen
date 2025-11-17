@@ -1,30 +1,10 @@
-import { DynamicTable } from "@/wrapper-components/DynamicTable";
+import { getParticipantsByContestAPI } from "@/api";
+import { DynamicTable } from "@/wrapper-components";
+import { useEffect, useState } from "react";
 
 export const LeetCodePage = () => {
-  const contestData = [
-    {
-      id: "69194fe44c9a232f67d36ac4",
-      contest_name: "weekly-contest-476",
-      username: "AS4rqqdZYj",
-      rank: 51,
-      score: 18,
-      finish_time: "2025-11-16T02:47:26",
-      old_rating: 1500,
-      new_rating: 1894.6,
-      delta_rating: 394.6,
-    },
-    {
-      id: "69194fe44c9a232f67d36ac5",
-      contest_name: "weekly-contest-476",
-      username: "freeyourmind",
-      rank: 52,
-      score: 18,
-      finish_time: "2025-11-16T02:47:53",
-      old_rating: 2794.266,
-      new_rating: 2807.75,
-      delta_rating: 13.48,
-    },
-  ];
+  const CURRENT_CONTEST = "weekly-contest-476";
+  const [participants, setParticipants] = useState([]);
 
   const tableConfig = {
     title: "Contest Results",
@@ -47,5 +27,17 @@ export const LeetCodePage = () => {
     ],
   };
 
-  return <DynamicTable data={contestData} config={tableConfig} />;
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getParticipantsByContestAPI(CURRENT_CONTEST, 1, 25);
+
+        setParticipants(res.data);
+      } catch (err: any) {
+        console.error("Failed to fetch participants:", err);
+      }
+    })();
+  }, []);
+
+  return <DynamicTable data={participants} config={tableConfig} />;
 };
