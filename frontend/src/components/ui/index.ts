@@ -6,7 +6,15 @@ import {
 } from "./accordion";
 import { Button } from "./button";
 import { Input } from "./input";
-import { Card } from "./card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./card";
 import { Textarea } from "./textarea";
 import { Layout } from "./layout";
 import {
@@ -38,6 +46,15 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from "./dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "./pagination";
 
 export {
   Accordion,
@@ -47,6 +64,12 @@ export {
   Button,
   Input,
   Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
   Textarea,
   Layout,
   Table,
@@ -75,4 +98,11 @@ export {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 };

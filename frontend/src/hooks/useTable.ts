@@ -1,72 +1,63 @@
-import { useMemo, useState } from "react";
+import { useState, useMemo } from "react";
 
-export type SortDirection = "asc" | "desc" | null;
-
-export function useTable<T extends Record<string, unknown>>(
-  data: T[],
-  columns: readonly { key: string; label: string }[]
+export function useTable(
+  data: Record<string, unknown>[],
+  columns: { key: string; label: string }[]
 ) {
-  const [sortCol, setSortCol] = useState<string | null>(null);
-  const [sortDir, setSortDir] = useState<SortDirection>(null);
-
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [sortCol, setSortCol] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [hiddenCols, setHiddenCols] = useState<Record<string, boolean>>({});
+  const [colOrder, setColOrder] = useState<string[]>(columns.map((c) => c.key));
 
-  const toggleSort = (col: string) => {
-    if (sortCol !== col) {
-      setSortCol(col);
+  const toggleSort = (key: string) => {
+    if (sortCol === key) setSortDir(sortDir === "asc" ? "desc" : "asc");
+    else {
+      setSortCol(key);
       setSortDir("asc");
-      return;
-    }
-    if (sortDir === "asc") return setSortDir("desc");
-    if (sortDir === "desc") {
-      setSortCol(null);
-      setSortDir(null);
-      return;
     }
   };
 
-  const toggleColumnVisibility = (col: string) => {
+  const toggleColumnVisibility = (key: string) => {
     setHiddenCols((prev) => ({
       ...prev,
-      [col]: !prev[col],
+      [key]: !prev[key],
     }));
   };
 
-  const filteredData = useMemo(() => {
-    return data.filter((row) =>
-      columns.every((c) => {
-        const filterValue = filters[c.key];
-        if (!filterValue) return true;
-        return String(row[c.key] ?? "")
-          .toLowerCase()
-          .includes(filterValue.toLowerCase());
-      })
+  const reorderColumns = (newOrder: string[]) => {
+    setColOrder(newOrder);
+  };
+
+  const processedData = useMemo(() => {
+    let temp = [...data];
+
+    temp = temp.filter((row) =>
+      Object.entries(filters).every(([key, value]) =>
+        value
+          ? String(row[key] ?? "")
+              .toLowerCase()
+              .includes(value.toLowerCase())
+          : true
+      )
     );
-  }, [data, filters, columns]);
 
-  const sortedData = useMemo(() => {
-    if (!sortCol || !sortDir) return filteredData;
+    if (sortCol) {
+      temp.sort((a, b) => {
+        const va = a[sortCol];
+        const vb = b[sortCol];
+        if (va == null || vb == null) return 0;
 
-    return [...filteredData].sort((a, b) => {
-      const v1 = a[sortCol];
-      const v2 = b[sortCol];
+        if (sortDir === "asc") return String(va).localeCompare(String(vb));
+        else return String(vb).localeCompare(String(va));
+      });
+    }
 
-      if (v1 == null) return 1;
-      if (v2 == null) return -1;
-
-      if (typeof v1 === "number" && typeof v2 === "number") {
-        return sortDir === "asc" ? v1 - v2 : v2 - v1;
-      }
-
-      return sortDir === "asc"
-        ? String(v1).localeCompare(String(v2))
-        : String(v2).localeCompare(String(v1));
-    });
-  }, [filteredData, sortCol, sortDir]);
+    return temp;
+  }, [data, filters, sortCol, sortDir]);
 
   return {
-    data: sortedData,
+    data: processedData,
     filters,
     setFilters,
     sortCol,
@@ -74,5 +65,7 @@ export function useTable<T extends Record<string, unknown>>(
     toggleSort,
     hiddenCols,
     toggleColumnVisibility,
+    colOrder,
+    reorderColumns,
   };
 }
