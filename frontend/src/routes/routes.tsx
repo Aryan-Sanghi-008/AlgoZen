@@ -1,36 +1,54 @@
-import type { RouteObject } from "react-router-dom";
-import Solutions from "@/pages/Solutions";
-import UpcomingContests from "@/pages/UpcomingContests";
-import { RankChecker } from "@/pages/RankChecker";
-import { ContestStandings } from "@/pages/leetcode/ContestStandings";
 import { Layout } from "@/components/ui";
-import { Contests } from "@/pages/leetcode/Contests";
+import {
+  LeetcodeConests,
+  LeetcodeConestStandings,
+  NegativeScreen,
+  RankChecker,
+  Solutions,
+} from "@/pages";
+import type { RouteObject } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export const routes: RouteObject[] = [
   {
     path: "/",
     element: <Layout />,
+    errorElement: <NegativeScreen />,
     children: [
       {
         index: true,
-        element: <Contests />,
-      },
-      {
-        path: ":contestName",
-        element: <ContestStandings />,
+        element: <RankChecker />,
       },
       {
         path: "solutions",
         element: <Solutions />,
       },
       {
-        path: "upcoming-contests",
-        element: <UpcomingContests />,
+        path: "contests",
+        children: [
+          {
+            index: true,
+            element: <Navigate to="leetcode" replace />,
+          },
+          {
+            path: "leetcode",
+            element: <LeetcodeConests />,
+          },
+          {
+            path: "leetcode/:contestName",
+            element: <LeetcodeConestStandings />,
+          },
+        ],
       },
       {
-        path: "rank-checker",
-        element: <RankChecker />,
+        path: "*",
+        element: <NegativeScreen />,
       },
     ],
+  },
+
+  {
+    path: "*",
+    element: <NegativeScreen />,
   },
 ];

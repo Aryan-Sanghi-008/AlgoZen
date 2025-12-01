@@ -9,7 +9,7 @@ import { useApi } from "@/hooks";
 import { useParams } from "react-router-dom";
 import type { TableConfig } from "@/types";
 
-export const ContestStandings = () => {
+export const LeetcodeConestStandings = () => {
   const { contestName } = useParams();
 
   const [participants, setParticipants] = useState([]);
@@ -21,7 +21,7 @@ export const ContestStandings = () => {
 
   const tableConfig: TableConfig = {
     title: "Contest Results",
-    description: "Leaderboard data for selected contest.",
+    description: "Leaderboard data of the contest.",
 
     columns: [
       { key: "rank", label: "Rank", dataType: "rank" },

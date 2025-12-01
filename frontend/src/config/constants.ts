@@ -6,9 +6,27 @@ export const APP = {
 };
 
 export const ROUTES = [
-  { name: "Home", path: "/", icon: "Home" },
-  { name: "Solutions", path: "/solutions", icon: "Code" },
-  { name: "Contests", path: "/upcoming-contests", icon: "Book" },
-  { name: "Rank Checker", path: "/rank-checker", icon: "Trophy" },
-  { name: "Settings", path: "/settings", icon: "Settings" },
+  {
+    name: "Rank Checker",
+    icon: "Search",
+    path: "/",
+  },
+
+  {
+    name: "Solutions",
+    icon: "Code",
+    path: "/solutions",
+  },
+  {
+    name: "Contests",
+    icon: "Calendar",
+    path: "/contests",
+    children: [
+      {
+        name: "LeetCode",
+        icon: "Code",
+        path: "/contests/leetcode",
+      },
+    ],
+  },
 ];

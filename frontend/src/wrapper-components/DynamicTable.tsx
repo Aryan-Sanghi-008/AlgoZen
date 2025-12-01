@@ -137,6 +137,9 @@ export const DynamicTable = ({
           ? value.toFixed(2)
           : value;
 
+      case "rank":
+        return `#${value}`;
+
       case "number":
         return parseInt(value);
 
@@ -161,7 +164,6 @@ export const DynamicTable = ({
         const hh = String(date.getHours()).padStart(2, "0");
         const min = String(date.getMinutes()).padStart(2, "0");
         const ss = String(date.getSeconds()).padStart(2, "0");
-
         return `${hh}:${min}:${ss}`;
       }
 
@@ -227,7 +229,7 @@ export const DynamicTable = ({
 
           <DropdownMenuContent
             align="end"
-            className="w-56 rounded-xl p-1 bg-popover shadow-md"
+            className="w-56 bg-secondary rounded-xl p-1 shadow-md"
           >
             <DndContext
               sensors={sensors}
@@ -285,7 +287,6 @@ export const DynamicTable = ({
                     </TableHead>
                   )
               )}
-              <TableHead className="py-3 px-4 text-right text-sm" />
             </TableRow>
           </TableHeader>
 

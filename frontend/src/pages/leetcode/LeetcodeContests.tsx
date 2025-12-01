@@ -8,7 +8,7 @@ import { useState, useMemo } from "react";
 import { useApi } from "@/hooks";
 import type { TableConfig } from "@/types";
 
-export const Contests = () => {
+export const LeetcodeConests = () => {
   const [page, setPage] = useState(1);
   const limit = 10;
 

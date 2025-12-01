@@ -23,7 +23,6 @@ export const Sidebar = ({
           collapsed ? "justify-center" : "justify-end"
         } p-3 relative`}
       >
-
         <button
           onClick={toggle}
           className="p-2 rounded-lg hover:bg-sidebar-accent/40 transition"
@@ -39,38 +38,73 @@ export const Sidebar = ({
       <nav className="flex flex-col gap-2 mt-4 px-2">
         {ROUTES.map((route) => {
           const Icon = ICONS[route.icon];
-          const active = pathname === route.path;
+
+          const isParentActive =
+            route.path === "/"
+              ? pathname === "/"
+              : pathname.startsWith(route.path);
+
+          if (!route.children) {
+            return (
+              <Link
+                key={route.name}
+                to={route.path}
+                className={`flex items-center gap-3 ${
+                  !collapsed ? "px-3" : "px-6"
+                } py-2 rounded-lg transition-all ${
+                  isParentActive
+                    ? "bg-sidebar-primary/30 border-sidebar-primary shadow-lg"
+                    : "hover:bg-sidebar-accent/30"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {!collapsed && <span>{route.name}</span>}
+              </Link>
+            );
+          }
 
           return (
-            <Link
-              key={route.name}
-              to={route.path}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all group border border-transparent ${
-                active
-                  ? "bg-sidebar-primary/30 border-sidebar-primary shadow-lg"
-                  : "hover:bg-sidebar-accent/30"
-              }`}
-            >
-              <Icon
-                className={`h-5 w-5 min-w-5 transition ${
-                  active
-                    ? "text-sidebar-primary"
-                    : "text-sidebar-foreground group-hover:text-foreground"
+            <div key={route.name} className="flex flex-col">
+              <Link
+                to={route.path}
+                className={`flex items-center gap-3 ${
+                  !collapsed ? "px-3" : "px-6"
+                } py-2 rounded-lg transition-all ${
+                  isParentActive
+                    ? "bg-sidebar-primary/20 border-sidebar-primary"
+                    : "hover:bg-sidebar-accent/20"
                 }`}
-              />
+              >
+                <Icon className="h-5 w-5" />
+                {!collapsed && (
+                  <span className="font-medium">{route.name}</span>
+                )}
+              </Link>
 
-              {!collapsed && (
-                <span
-                  className={`text-sm font-medium transition ${
-                    active
-                      ? "text-sidebar-foreground"
-                      : "text-sidebar-foreground group-hover:text-foreground"
-                  }`}
-                >
-                  {route.name}
-                </span>
+              {!collapsed && isParentActive && (
+                <div className="ml-8 mt-3 flex flex-col gap-1">
+                  {route.children.map((child) => {
+                    const ChildIcon = ICONS[child.icon];
+                    const childActive = pathname.startsWith(child.path);
+
+                    return (
+                      <Link
+                        key={child.name}
+                        to={child.path}
+                        className={`flex items-center gap-2 px-2 py-1 rounded-md text-sm transition ${
+                          childActive
+                            ? "bg-sidebar-primary/30 text-sidebar-primary"
+                            : "hover:bg-sidebar-accent/30"
+                        }`}
+                      >
+                        <ChildIcon className="h-4 w-4" />
+                        <span>{child.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
               )}
-            </Link>
+            </div>
           );
         })}
       </nav>
