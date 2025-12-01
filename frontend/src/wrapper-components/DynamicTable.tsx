@@ -1,11 +1,4 @@
-import {
-  MoreVertical,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  GripVertical,
-} from "lucide-react";
-
+import { ArrowUpDown, ArrowUp, ArrowDown, GripVertical } from "lucide-react";
 import {
   Button,
   Table,
@@ -27,22 +20,25 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+
 import {
   SortableContext,
   verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
+
 import { CSS } from "@dnd-kit/utilities";
-
 import { useTable } from "@/hooks/useTable";
+import { useNavigate } from "react-router-dom";
+import type { ColumnConfig, TableConfig } from "@/types";
 
-// ---------- Sortable Row in dropdown ----------
+/* ------------------ Sortable Column Item ------------------ */
 const SortableColumnItem = ({
   col,
   hidden,
   toggleVisibility,
 }: {
-  col: { key: string; label: string };
+  col: ColumnConfig;
   hidden: boolean;
   toggleVisibility: () => void;
 }) => {
@@ -58,7 +54,7 @@ const SortableColumnItem = ({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center justify-between px-2 py-1.5 cursor-grab"
+      className="flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted/40 cursor-pointer transition"
     >
       <DropdownMenuCheckboxItem
         checked={!hidden}
@@ -68,27 +64,39 @@ const SortableColumnItem = ({
         {col.label}
       </DropdownMenuCheckboxItem>
 
-      {/* DRAG HANDLE */}
       <GripVertical
         {...attributes}
         {...listeners}
-        className="h-4 w-4 opacity-70 hover:text-primary cursor-grab active:cursor-grabbing"
+        className="h-4 w-4 opacity-60 hover:opacity-100 cursor-grab active:cursor-grabbing transition"
       />
     </div>
   );
 };
 
-// ------------ Main Table component --------------
+/* ------------------ Skeleton Loader ------------------ */
+export const TableSkeleton = () => {
+  return (
+    <div className="p-6 border rounded-xl bg-card/50">
+      <div className="animate-pulse space-y-4">
+        {[...Array(25)].map((_, i) => (
+          <div key={i} className="flex gap-4">
+            {[...Array(6)].map((__, j) => (
+              <div key={j} className="h-8 flex-1 bg-muted/90 rounded" />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ------------------ Dynamic Table ------------------ */
 export const DynamicTable = ({
   data,
   config,
 }: {
   data: Record<string, unknown>[];
-  config: {
-    title: string;
-    description?: string;
-    columns: { key: string; label: string }[];
-  };
+  config: TableConfig;
 }) => {
   const {
     data: processedData,
@@ -102,33 +110,125 @@ export const DynamicTable = ({
   } = useTable(data, config.columns);
 
   const sensors = useSensors(useSensor(PointerSensor));
+  const navigate = useNavigate();
 
+  // Helper to parse date
+  const parseDate = (v: any) => {
+    const date = new Date(v);
+    if (isNaN(date.getTime())) return null;
+    return date;
+  };
+
+  /* ------------------ Format Cell Value ------------------ */
+  const formatCellValue = (
+    value: any,
+    col: ColumnConfig,
+    row?: Record<string, any>
+  ): React.ReactNode => {
+    if (col.render) return col.render(value, row);
+    if (value == null) return "--";
+
+    switch (col.dataType) {
+      case "string":
+        return String(value);
+
+      case "decimal":
+        return typeof value === "number" && !Number.isInteger(value)
+          ? value.toFixed(2)
+          : value;
+
+      case "number":
+        return parseInt(value);
+
+      case "date": {
+        const date = parseDate(value);
+        if (!date) return String(value);
+
+        const dd = String(date.getDate()).padStart(2, "0");
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const yyyy = date.getFullYear();
+        const hh = String(date.getHours()).padStart(2, "0");
+        const min = String(date.getMinutes()).padStart(2, "0");
+        const ss = String(date.getSeconds()).padStart(2, "0");
+
+        return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
+      }
+
+      case "time": {
+        const date = parseDate(value);
+        if (!date) return String(value);
+
+        const hh = String(date.getHours()).padStart(2, "0");
+        const min = String(date.getMinutes()).padStart(2, "0");
+        const ss = String(date.getSeconds()).padStart(2, "0");
+
+        return `${hh}:${min}:${ss}`;
+      }
+
+      case "hyperlink":
+        if (!col.hrefPrefix) return String(value);
+        return (
+          <a
+            href={`${col.hrefPrefix}${encodeURIComponent(String(value))}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:text-chart-3 underline underline-offset-2 cursor-pointer"
+          >
+            {String(value)}
+          </a>
+        );
+
+      case "navigate":
+        const extValue = row && col.externalKey ? row[col.externalKey] : null;
+        return (
+          <p
+            onClick={() => navigate(extValue ?? String(value))}
+            className="text-primary hover:text-chart-3 hover:underline underline-offset-2 cursor-pointer"
+          >
+            {String(value)}
+          </p>
+        );
+
+      default:
+        return String(value);
+    }
+  };
+
+  /* ------------------ Sort Icon ------------------ */
   const getSortIcon = (key: string | null) => {
     if (sortCol !== key) return <ArrowUpDown className="h-3 w-3 opacity-50" />;
     if (sortDir === "asc") return <ArrowUp className="h-3 w-3" />;
     return <ArrowDown className="h-3 w-3" />;
   };
 
-  // ordered columns based on colOrder
   const orderedColumns = colOrder
     .map((key) => config.columns.find((c) => c.key === key)!)
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter((col) => !col.hidden); // completely hidden columns removed
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 rounded-2xl border bg-card/50 shadow-lg backdrop-blur-md w-full h-fit">
+      {/* ---------------- Header ---------------- */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">{config.title}</h1>
           <p className="text-muted-foreground">{config.description}</p>
         </div>
 
-        {/* DROPDOWN WITH DRAGGABLE & CHECKBOX COLUMNS */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">Columns</Button>
+            <Button
+              variant="outline"
+              className="rounded-lg bg-background/60 hover:bg-muted/40 transition"
+            >
+              Columns
+            </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent
+            align="end"
+            className="w-56 rounded-xl p-1 bg-popover shadow-md"
+          >
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -139,12 +239,10 @@ export const DynamicTable = ({
                 const oldIndex = colOrder.indexOf(String(active.id));
                 const newIndex = colOrder.indexOf(String(over.id));
 
-                // ---- CREATE NEW ORDER ----
                 const newOrder = [...colOrder];
                 const [moved] = newOrder.splice(oldIndex, 1);
                 newOrder.splice(newIndex, 0, moved);
 
-                // ---- CALL YOUR API ----
                 reorderColumns(newOrder);
               }}
             >
@@ -166,48 +264,53 @@ export const DynamicTable = ({
         </DropdownMenu>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {orderedColumns.map(
-              (col) =>
-                !hiddenCols[col.key] && (
-                  <TableHead key={col.key} className="select-none">
-                    <div
-                      className="flex items-center gap-1 cursor-pointer"
-                      onClick={() => toggleSort(col.key)}
-                    >
-                      {col.label}
-                      {getSortIcon(col.key)}
-                    </div>
-                  </TableHead>
-                )
-            )}
-            <TableHead className="text-right"></TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {processedData.map((row, idx) => (
-            <TableRow key={idx}>
+      {/* ---------------- Table ---------------- */}
+      <div className="overflow-auto rounded-xl border bg-background/40 backdrop-blur-sm">
+        <Table className="rounded-xl overflow-hidden shadow-sm">
+          <TableHeader className="sticky top-0 bg-background/80 backdrop-blur-md shadow-sm">
+            <TableRow>
               {orderedColumns.map(
                 (col) =>
                   !hiddenCols[col.key] && (
-                    <TableCell key={col.key}>
-                      {String(row[col.key] ?? "--")}
-                    </TableCell>
+                    <TableHead
+                      key={col.key}
+                      className="py-3 px-4 text-sm font-semibold text-muted-foreground 
+                      whitespace-nowrap hover:text-foreground transition-colors cursor-pointer"
+                      onClick={() => toggleSort(col.key)}
+                    >
+                      <div className="flex items-center gap-1">
+                        {col.label}
+                        {getSortIcon(col.key)}
+                      </div>
+                    </TableHead>
                   )
               )}
-
-              <TableCell className="text-right">
-                <Button variant="ghost" size="icon">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </TableCell>
+              <TableHead className="py-3 px-4 text-right text-sm" />
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+
+          <TableBody className="[&>tr:nth-child(even)]:bg-muted/50">
+            {processedData.map((row, idx) => (
+              <TableRow
+                key={idx}
+                className="border-b border-border/60 last:border-0 hover:bg-muted/50 transition-colors"
+              >
+                {orderedColumns.map(
+                  (col) =>
+                    !hiddenCols[col.key] && (
+                      <TableCell
+                        key={col.key}
+                        className="py-3 px-4 text-sm whitespace-nowrap"
+                      >
+                        {formatCellValue(row[col.key], col, row)}
+                      </TableCell>
+                    )
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };

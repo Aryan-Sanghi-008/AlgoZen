@@ -1,31 +1,46 @@
+// src/components/ui/Layout.tsx
 import { useState } from "react";
 import { Sidebar } from "./sidebar";
 import { Navbar } from "./navbar";
+import clsx from "clsx";
+import { Outlet } from "react-router-dom";
 
-export const Layout = ({ children }: { children: React.ReactNode }) => {
+export const Layout = () => {
   const [collapsed, setCollapsed] = useState(true);
 
   return (
     <div
-      className="h-screen w-screen grid bg-background text-foreground"
+      className={clsx(
+        "min-h-screen w-screen grid bg-background text-foreground transition-[grid-template-columns] duration-300"
+      )}
       style={{
         gridTemplateColumns: collapsed ? "5rem 1fr" : "15rem 1fr",
         gridTemplateRows: "3.8rem 1fr",
       }}
     >
-      <div className="row-span-2">
+      {/* SIDEBAR */}
+      <div className="row-span-2 border-r border-border bg-card/40 backdrop-blur-md">
         <Sidebar
           collapsed={collapsed}
           toggle={() => setCollapsed(!collapsed)}
         />
       </div>
 
-      <div className="col-start-2 bg-card border-b border-border">
+      {/* NAVBAR */}
+      <div className="col-start-2 bg-card/60 backdrop-blur-md border-b border-border shadow-sm">
         <Navbar />
       </div>
 
-      <main className="col-start-2 overflow-y-auto bg-background p-6">
-        {children}
+      {/* MAIN */}
+      <main
+        className={clsx(
+          "col-start-2 overflow-y-auto p-6",
+          "bg-background",
+          "transition-colors"
+        )}
+      >
+        {/* Render nested routes here */}
+        <Outlet />
       </main>
     </div>
   );

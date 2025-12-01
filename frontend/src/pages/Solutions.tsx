@@ -32,7 +32,7 @@ const Solutions = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+      <div className="flex items-center justify-center bg-background text-foreground">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );

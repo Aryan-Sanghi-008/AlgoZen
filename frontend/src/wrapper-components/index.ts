@@ -1,3 +1,4 @@
-import { DynamicTable } from "./DynamicTable";
+import { DynamicTable, TableSkeleton } from "./DynamicTable";
+import { TablePagination } from "./TablePagination";
 
-export { DynamicTable };
+export { DynamicTable, TableSkeleton, TablePagination};
