@@ -1,4 +1,8 @@
-import { getContestUsersCount, getParticipantsByContestAPI } from "@/api";
+import {
+  getContestUsersCount,
+  getParticipantsByContestAPI,
+  getUserByContestAPI,
+} from "@/api";
 import {
   DynamicTable,
   TablePagination,
@@ -11,16 +15,22 @@ import type { TableConfig } from "@/types";
 
 export const LeetcodeConestStandings = () => {
   const { contestName } = useParams();
+  const CURRENT_CONTEST_NAME =
+    contestName
+      ?.split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ") ?? "";
 
   const [participants, setParticipants] = useState([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(25);
 
   const [total, setTotal] = useState(0);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const totalPages = Math.ceil(total / limit);
 
   const tableConfig: TableConfig = {
-    title: "Contest Results",
+    title: CURRENT_CONTEST_NAME + " - Standings",
     description: "Leaderboard data of the contest.",
 
     columns: [
@@ -32,7 +42,6 @@ export const LeetcodeConestStandings = () => {
         hrefPrefix: "https://leetcode.com/",
       },
       { key: "score", label: "Score" },
-      { key: "finish_time", label: "Finish Time", dataType: "time" },
       { key: "old_rating", label: "Old Rating", dataType: "decimal" },
       { key: "new_rating", label: "New Rating", dataType: "decimal" },
       { key: "delta_rating", label: "Δ Rating", dataType: "decimal" },
@@ -45,6 +54,15 @@ export const LeetcodeConestStandings = () => {
       contest: contestName,
       page,
       limit,
+    },
+    {
+      enabled: true,
+      onSuccess: (res) => {
+        if (!searchQuery) {
+          setParticipants(res.data);
+          setTotal(res.data.length);
+        }
+      },
     }
   );
 
@@ -57,18 +75,45 @@ export const LeetcodeConestStandings = () => {
     }
   );
 
-  useEffect(() => {
-    if (participantsData) {
-      setParticipants(participantsData.data);
+  const { refetch: fetchSearchedUsers } = useApi(
+    getUserByContestAPI,
+    { contest: contestName, username: searchQuery },
+    {
+      enabled: false,
+      onSuccess: (res) => {
+        setParticipants(res.data);
+        setTotal(res.data.length);
+      },
     }
-  }, [participantsData]);
+  );
+
+  useEffect(() => {
+    if (!searchQuery.trim()) return;
+    fetchSearchedUsers();
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (searchQuery.trim() !== "") return;
+
+    if (participantsData?.data) {
+      setParticipants(participantsData.data);
+      setTotal(participantsData.data.length);
+    }
+  }, [searchQuery, participantsData]);
 
   return (
     <div className="space-y-6 min-h-fit h-auto">
       {loading ? (
         <TableSkeleton />
       ) : (
-        <DynamicTable data={participants} config={tableConfig} />
+        <DynamicTable
+          data={participants}
+          config={tableConfig}
+          onSearchSubmit={(q) => {
+            setSearchQuery(q);
+            console.log("Search submitted:", q);
+          }}
+        />
       )}
 
       {/* PAGINATION */}

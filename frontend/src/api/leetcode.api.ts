@@ -47,7 +47,7 @@ export const getUserByContestAPI = async ({
   contest: string;
   username: string;
 }) => {
-  return api.get("/contest-records/", {
+  return api.get("/contest-records/user", {
     params: {
       contest_name: contest,
       username,

@@ -31,6 +31,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { useTable } from "@/hooks/useTable";
 import { useNavigate } from "react-router-dom";
 import type { ColumnConfig, TableConfig } from "@/types";
+import { TableSearch } from "./TableSearch";
+import { format, parseISO } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
 /* ------------------ Sortable Column Item ------------------ */
 const SortableColumnItem = ({
@@ -94,9 +97,11 @@ export const TableSkeleton = () => {
 export const DynamicTable = ({
   data,
   config,
+  onSearchSubmit,
 }: {
   data: Record<string, unknown>[];
   config: TableConfig;
+  onSearchSubmit?: (query: string) => void;
 }) => {
   const {
     data: processedData,
@@ -144,17 +149,20 @@ export const DynamicTable = ({
         return parseInt(value);
 
       case "date": {
-        const date = parseDate(value);
-        if (!date) return String(value);
+        try {
+          const normalized = value.endsWith("Z") ? value : value + "Z";
 
-        const dd = String(date.getDate()).padStart(2, "0");
-        const mm = String(date.getMonth() + 1).padStart(2, "0");
-        const yyyy = date.getFullYear();
-        const hh = String(date.getHours()).padStart(2, "0");
-        const min = String(date.getMinutes()).padStart(2, "0");
-        const ss = String(date.getSeconds()).padStart(2, "0");
+          const date = parseISO(normalized);
+          if (isNaN(date.getTime())) return String(value);
 
-        return `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
+          const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+          const zonedDate = toZonedTime(date, timezone);
+
+          return format(zonedDate, "dd/MM/yyyy HH:mm:ss");
+        } catch {
+          return String(value);
+        }
       }
 
       case "time": {
@@ -216,6 +224,8 @@ export const DynamicTable = ({
           <h1 className="text-3xl font-bold">{config.title}</h1>
           <p className="text-muted-foreground">{config.description}</p>
         </div>
+
+        {onSearchSubmit && <TableSearch onSearchSubmit={onSearchSubmit} />}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
