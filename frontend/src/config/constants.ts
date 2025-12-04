@@ -7,7 +7,7 @@ export const APP = {
 
 export const ROUTES = [
   {
-    name: "Rank Checker",
+    name: "Wordle",
     icon: "Search",
     path: "/",
   },
@@ -29,4 +29,38 @@ export const ROUTES = [
       },
     ],
   },
+];
+
+// small example list; replace with a full word list of 5-letter words (lowercase).
+export const WORDS = [
+  "apple",
+  "bench",
+  "cigar",
+  "dried",
+  "eagle",
+  "frame",
+  "greet",
+  "havey",
+  "index",
+  "joker",
+  "knife",
+  "lemon",
+  "mango",
+  "night",
+  "ocean",
+  "proxy",
+  "query",
+  "right",
+  "sword",
+  "tiger",
+  "urban",
+  "vivid",
+  "waste",
+  "xenon",
+  "yield",
+  "zebra",
+  "quack",
+  "spare",
+  "trunk",
+  "angle",
 ];

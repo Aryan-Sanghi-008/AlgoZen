@@ -3,9 +3,9 @@ import {
   LeetcodeConests,
   LeetcodeConestStandings,
   NegativeScreen,
-  RankChecker,
   Solutions,
 } from "@/pages";
+import { Game } from "@/pages/leetcode/wordle/Wordle";
 import type { RouteObject } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 
@@ -17,7 +17,7 @@ export const routes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <RankChecker />,
+        element: <Game />,
       },
       {
         path: "solutions",

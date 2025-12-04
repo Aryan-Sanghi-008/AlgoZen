@@ -1,12 +1,24 @@
 // src/components/ui/Layout.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "./sidebar";
 import { Navbar } from "./navbar";
 import clsx from "clsx";
 import { Outlet } from "react-router-dom";
+import { getWordListAPI } from "@/api/wordle.api";
 
 export const Layout = () => {
   const [collapsed, setCollapsed] = useState(true);
+
+  useEffect(() => {
+    const loadWordList = async () => {
+      if (!localStorage.getItem("wordle_word_list")) {
+        const { data } = await getWordListAPI();
+        localStorage.setItem("wordle_word_list", data);
+      }
+    };
+
+    loadWordList();
+  }, []);
 
   return (
     <div
