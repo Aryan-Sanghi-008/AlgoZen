@@ -446,7 +446,7 @@
     var(--primary)
   );
   background-size: 300% 300%;
-  animation: flowing-gradient 5s ease infinite;
+  animation: flowing-gradient 20s ease-in infinite;
   -webkit-background-clip: text;
   color: transparent;
 }

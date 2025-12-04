@@ -27,7 +27,9 @@ export const LeetcodeConestStandings = () => {
 
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const totalPages = Math.ceil(total / limit);
+  const [totalPages, setTotalPages] = useState<number>(
+    Math.ceil(total / limit)
+  );
 
   const tableConfig: TableConfig = {
     title: CURRENT_CONTEST_NAME + " - Standings",
@@ -60,7 +62,6 @@ export const LeetcodeConestStandings = () => {
       onSuccess: (res) => {
         if (!searchQuery) {
           setParticipants(res.data);
-          setTotal(res.data.length);
         }
       },
     }
@@ -82,7 +83,7 @@ export const LeetcodeConestStandings = () => {
       enabled: false,
       onSuccess: (res) => {
         setParticipants(res.data);
-        setTotal(res.data.length);
+        setTotalPages(1);
       },
     }
   );
@@ -97,7 +98,7 @@ export const LeetcodeConestStandings = () => {
 
     if (participantsData?.data) {
       setParticipants(participantsData.data);
-      setTotal(participantsData.data.length);
+      setTotalPages(Math.ceil(total / limit));
     }
   }, [searchQuery, participantsData]);
 

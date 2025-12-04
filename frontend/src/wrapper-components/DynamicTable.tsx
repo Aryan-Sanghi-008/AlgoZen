@@ -286,7 +286,7 @@ export const DynamicTable = ({
                   !hiddenCols[col.key] && (
                     <TableHead
                       key={col.key}
-                      className="py-3 px-4 text-sm font-semibold text-muted-foreground 
+                      className="py-3 px-4 text-md font-semibold text-muted-foreground 
                       whitespace-nowrap hover:text-foreground transition-colors cursor-pointer"
                       onClick={() => toggleSort(col.key)}
                     >
@@ -311,7 +311,7 @@ export const DynamicTable = ({
                     !hiddenCols[col.key] && (
                       <TableCell
                         key={col.key}
-                        className="py-3 px-4 text-sm whitespace-nowrap"
+                        className="py-3 px-4 text-md whitespace-nowrap"
                       >
                         {formatCellValue(row[col.key], col, row)}
                       </TableCell>
