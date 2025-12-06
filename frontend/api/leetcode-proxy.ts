@@ -2,7 +2,6 @@ export const config = {
   runtime: "edge",
 };
 
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -10,7 +9,6 @@ const corsHeaders = {
 };
 
 export default async function handler(req: Request) {
-  // Handle OPTIONS method for CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
