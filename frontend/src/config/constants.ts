@@ -11,12 +11,11 @@ export const ROUTES = [
     icon: "Search",
     path: "/",
   },
-
-  {
-    name: "Solutions",
-    icon: "Code",
-    path: "/solutions",
-  },
+  // {
+  //   name: "Solutions",
+  //   icon: "Code",
+  //   path: "/solutions",
+  // },
   {
     name: "Contests",
     icon: "Calendar",

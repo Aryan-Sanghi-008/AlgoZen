@@ -3,7 +3,6 @@ import {
   LeetcodeConests,
   LeetcodeConestStandings,
   NegativeScreen,
-  Solutions,
 } from "@/pages";
 import { Game } from "@/pages/leetcode/wordle/Wordle";
 import type { RouteObject } from "react-router-dom";
@@ -18,10 +17,6 @@ export const routes: RouteObject[] = [
       {
         index: true,
         element: <Game />,
-      },
-      {
-        path: "solutions",
-        element: <Solutions />,
       },
       {
         path: "contests",
