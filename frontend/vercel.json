@@ -5,15 +5,16 @@
       "maxDuration": 10
     }
   },
-  "routes": [
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
     {
-      "src": "/api/leetcode-proxy/(.*)",
-      "dest": "/api/leetcode-proxy",
-      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+      "source": "/api/leetcode-proxy/(.*)",
+      "destination": "/api/leetcode-proxy"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/((?!assets/).*)",
+      "destination": "/index.html"
     }
   ]
 }

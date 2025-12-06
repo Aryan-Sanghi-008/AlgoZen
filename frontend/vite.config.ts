@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), tsconfigPaths()],
   server: {
@@ -17,7 +16,16 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    assetsDir: "assets",
+    emptyOutDir: true,
     chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash].[ext]"
+      }
+    }
   },
   base: "/",
 });
