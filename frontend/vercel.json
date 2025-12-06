@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "routes": [
+    {
+      "src": "/api/leetcode-proxy/(.*)",
+      "dest": "/src/api/leetcode-proxy/$1.ts"
+    }
+  ]
+}
