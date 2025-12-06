@@ -4,6 +4,7 @@ export const config = {
 
 export default async function handler(req: Request) {
   const url = new URL(req.url);
+
   const target =
     "https://lccn.lbao.site/api/v1" +
     url.pathname.replace("/api/leetcode-proxy", "") +
